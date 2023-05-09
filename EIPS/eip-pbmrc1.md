@@ -1,7 +1,7 @@
 ---
 title: Purpose bound money
 description: An interface extending EIP-1155 for <placeholder>, supporting use case such as <placeholder>
-author: Victor Liew (@Alcedo),
+authors: Victor Liew (@Alcedo), Wong Tse Jian (@wongtsejian)
 discussions-to: https://ethereum-magicians.org (Create a discourse here for early feedback)
 status:  DRAFT
 type: Standards Track
@@ -10,56 +10,78 @@ created: 2023-04-01
 requires: 165, 173, 1155
 ---
 
-<!-- Notes: replace PRBMRC with an EIP number upon creating a PR to EIP Main repo -->
+<!-- Notes: replace PRBMRC with EIP upon creating a PR to EIP Main repo -->
 ## Abstract
 
-This PBMRC outlines a smart contract interface that builds upon the [ERC-1155](./eip-1155.md) standard to introduce the concept of a purpose bound money (PBM) defined in the [Project Orchid Whitepaper](../assets/eip-pbmrc1/MAS-Project-Orchid.pdf) 
+This PBMRC outlines a smart contract interface that builds upon the [ERC-1155](./eip-1155.md) standard to introduce the concept of a purpose bound money (PBM) defined in the [Project Orchid Whitepaper](../assets/eip-pbmrc1/MAS-Project-Orchid.pdf).
 
-It builts upon the [ERC-1155](./eip-1155.md) standard to leverage upon existing widespread support that wallet providers has implemeneted to display the PBM and to trigger various transfer logic.
-
+It builds upon the [ERC-1155](./eip-1155.md) standard, by leveraging pre-existing, widespread support that wallet providers have implemented, to display the PBM and trigger various transfer logic.
 
 ## Motivation
 
-Purpose Bound Money (PBM) refers to a protocol that specifies the conditions under which an underlying digital token of value can be used. PBMs can be a bearer or order instruments with self-contained programming logic, and can be transferred between two parties without intermediaries. 
+The establishment of this protocol seeks to forestalls technology fragmentation and consequently a lack of interoperability. By making the PBM specification open, it gives new participants easy and free access to the pre-existing market standards, enabling interoperability across different platforms, wallets, payment systems and rails. This would lower cost of entry for new participants, foster a vibrant payment landscape and prevent the development of walled gardens and monopolies, ultimately leading to more efficient, affordable services and better user experiences.
 
-It combines the concept of programmable payments - automatic execution of payments once a pre-defined set of conditions are met and programmable money - the possibility of embedding rules within the medium of exchange itself that defines or constraints its usage.
+## PBM Token and PBM-based architecture
 
-This standard is critical to ensure that introducing PBM does not lead to fragmentation of various proprietary standard. By making the PBM specification open, it allows for interoperability across different platforms, wallets, payment systems and rails.
+A PBM based architecture has several distinct components:
+
+- **Spot Token** - a ERC-20 compatible digital currency serving as the collateral backing the PBM token. The term spot token refers to a specific digital token or asset traded in the spot market and hence the spot token has an underlying value ascribe to it.
+  - Digital currency referred to in this PBMRC paper **SHOULD** possess the following properties:
+    - a good store of value;
+    - a suitable unit of account; and
+    - a medium of exchange;
+- **PBM wrapper** - a smart contract, which wraps the Spot Token, by specifying condition(s) that has/have to be met (aka PBM business logic). The smart contract verifies that condition(s) has/have been met before unwrapping the underlying Spot Token;
+- **PBM Token** - the Spot Token and its PBM wrapper are collectively referred to as a PBM Token. PBM Tokens are represented as a [ERC-1155](./eip-1155.md) token.
+  - PBM Tokens are bearer instruments, with self-contained programming logic, and can be transferred between two parties without involving intermediaries. It combines the concept of:
+    - programmable payment - automatic execution of payments once a pre-defined set of conditions are met; and
+    - programmable money - the possibility of embedding rules within the medium of exchange itself that defines or constraints its usage.
+  - A PBM creator is able to issue any amount of PBM Tokens.
+- **PBM infrastructure** - consisting of a ledger-based infrastructure. While a PBM can be either distributed ledger technology (DLT) based or non-DLT based, the scope of this PBMRC paper is limited to a DLT-based infrastructure build upon the Ethereum blockchain;
+- **PBM wallet** - cryptographic wallets which holds users' private keys, granting them access to PBMs.
 
 ## Specification
+
 The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”, “SHOULD NOT”, “RECOMMENDED”, “NOT RECOMMENDED”, “MAY”, and “OPTIONAL” in this document are to be interpreted as described in RFC 2119 and RFC 8174.
 
-### Overview 
-- Whether a PBM **SHOULD** have an expiry time will be decided by the PBM creator, the spec itself should not enforce an expiry time.
-    - In lieu of our goals of making PBM a suitable construct for all kinds of business logic that could occur in the real world.
-    - Should an expiry time not be needed, the expiry time can be set to infinity.
-- PBM **MUST** provide a mechanism for all transacting parties to verify the condition by which the token of value can be unwrapped
-- PBM **MUST** wrap an underlying token of value.
-    - The wrapping of the token can be done either upon the creation of the PBM or wrapped on the fly at a later date.
-    - A token of value can be implemented in any widely accepted ERC. E.g. ERC-20, ERC-777, ERC-1363
-        - The definition of the word value goes beyond the current scope of our work - refer to project orchid white paper page 14 for details.
-    - Consequently, the semantic use of the words "wrap" and "unwrap" would convey the bounding and unbounding of the underlying token.
-- PBM **SHALL** adhere to the definition of “wrapping” or “wrap” to mean bounding a token in accordance with PBM business logic during its lifecycle stage.
-- PBM **SHALL** adhere to the definition of “unwrap” or “unwrapping” to mean the release of a token in accordance with the PBM business logic during its lifecycle stage.
-- There **MUST** be an owner responsible for the creation and maintenance of the PBM
-- The definition of purpose bound refers to:
-    - A set of conditions that determines the mechanism by which the underlying token of value is being unwrapped to an intended recipient
-- We would define a base specification of what a PBM should entail, with extensions to the base specification implemented as another specification on top of the base specification.
+### Overview
 
-### Fungibility 
-It is possible to create multiple types of PBM token sets within the same smart contract. Each PBM token may or may not be fungible to one another within the same contract.The standard does NOT mandate how an implementation must do this.
+- Whether a PBM token **SHOULD** have an expiry time will be decided by the PBM creator, the spec itself should not enforce an expiry time.
+  - To align with our goals of making PBM token a suitable construct for all kinds of business logic that could occur in the real world.
+
+  - Should an expiry time not be needed, the expiry time can be set to infinity.
+
+- A valid PBM token **MUST** consist of an underlying digital currency and the PBM wrapper.
+  - The wrapping of the digital currency can be done either upon the creation of the PBM wrapper or at a later date prior to its issuance.
+  
+  - A digital currency can be implemented in any widely accepted ERC. E.g. ERC-20, ERC-777, ERC-1363
+
+  - Consequently, the semantic use of the words "wrap" and "unwrap" would convey the bounding and unbounding of the underlying token.
+
+- PBM wrapper **MUST** provide a mechanism for all transacting parties to verify that all necessary condition(s) have been met before allowing the PBM token to be unwrapped to release the digital currency
+
+- PBM **SHALL** adhere to the definition of “wrap” or “wrapping” to mean bounding a token in accordance with PBM business logic during its lifecycle stage.
+
+- PBM **SHALL** adhere to the definition of “unwrap” or “unwrapping” to mean the release of a token in accordance with the PBM business logic during its lifecycle stage.
+
+- There **MUST** be an owner responsible for the creation and maintenance of the PBM
+
+- The definition of purpose bound refers to:
+
+  - A set of conditions that determines the mechanism by which the underlying token of value is being unwrapped to an intended recipient
+  
+- This paper defines a base specification of what a PBM should entail. Extensions to this base specification can be implemented as separate specifications.
+
+### Fungibility
+
+A PBM wrapper **SHOULD** be able to wrap multiple types of digital currencies. Digital currencies wrapped by the same PBM wrapper may or may not be fungible to one another. The standard does NOT mandate how an implementation must do this.
 
 ### A Note on Implementing Interfaces
-In order to allow the implementors of the PBM token standards to have maximum flexibility in the way they structure the PBM business logic, a PBM can implement an interface in one of two ways: directly (`contract ContractName is InterfaceName`), or by adding functions to it from one or more interfaces. For the purposes of this specification, when a PBM is said to implement an interface, either method of implementation is permitted.
 
-
-### Terms
-1. **PBM Token** Refers to purpose bound money, represented as a [ERC-1155](./eip-1155.md) token. Each token would hold specific details that is required by the PBM business logic. A PBM smart contract is able to issue any amount of PBM Tokens
-1. **Spot Token** Underlying ERC-20 compaitible token of value that is to be held by the smart contract. The term spot token was chosen to refer to a specific digital token or asset traded in the spot market and hence would convey that the token has an underlying value ascribe to it. 
-
+In order to allow the implementors of this PBM standard to have maximum flexibility in the way they structure the PBM business logic, a PBM can implement an interface in one of two ways: directly (`contract ContractName is InterfaceName`), or by adding functions to it from one or more interfaces. For the purposes of this specification, when a PBM is said to implement an interface, either method of implementation is permitted.
 
 ### PBM token details
-A state variable consisting of all additional details required to facilitate the business logic for a particular PBM type MUST be defined. The compulsory fields are not defined, but may be defined by later proposals. 
+
+A state variable consisting of all additional details required to facilitate the business logic for a particular PBM type MUST be defined. The compulsory fields are not defined, but may be defined by later proposals.
 
 An external function may be exposed to create new PBMToken as well at a later date.
 
@@ -115,10 +137,11 @@ Example of token details:
     /// @param tokenId The identifier of the PBM token type.
     /// @return A PBMToken struct containing all the details of the specified PBM token type.
     function getTokenDetails(uint256 tokenId) external view returns(PBMToken memory); 
-``` 
+```
 
 ### PBM Address List
-A list of targeted addresses for PBM unwrapping must be specified in an address list. 
+
+A list of targeted addresses for PBM unwrapping must be specified in an address list.
 
 ```solidity
 
@@ -138,20 +161,20 @@ interface IPBMAddressList {
 
 ### PBMRC1 - Base Interface
 
-<!-- TBD Copy from assets/eip-pbmrc1/contracts/IPBMRC1.sol  -->
+<!-- TBD Copy from IPBMRC1.sol -->
 
 ```solidity
 
 
 ```
 
-
 ## Extensions
 
 ### PBMRC1 - Token Receiver
-Smart contracts MUST implement all of the functions in the PBMRC1_TokenReceiver interface to subscribe to PBM unwrap callbacks 
 
-```solidity 
+Smart contracts MUST implement all of the functions in the PBMRC1_TokenReceiver interface to subscribe to PBM unwrap callbacks.
+
+```solidity
 pragma solidity ^0.8.0;
 
 /// @notice Smart contracts MUST implement the ERC-165 `supportsInterface` function and signify support for the `PBMRC1_TokenReceiver` interface to accept callbacks.
@@ -195,29 +218,25 @@ The **Non Preloaded** PBM extension is OPTIONAL for compliant smart contracts. T
 
 Compliant contract **MUST** implement the following interface:
 
-<!-- TBD Copy from assets/eip-pbmrc1/contracts/IPBMRC2.sol  -->
-
+<!-- TBD Copy from IPBMRC2.sol -->
 ```solidity
 
 
 ```
 
-
 ## Rationale
 
-### Overview
+This design extends the [ERC-1155](./eip-1155.md) standards in order to enable easy adoption by existing wallet providers. Currently, most wallet providers are able to support and display ERC-20, ERC-1155 and ERC-721 standards. An implementation which doesn't extend these standards will require the wallet provider to build a custom user interface and interfacing logic which will increases the implementation cost and lengthen the time-to-market.
 
-This design extends the [ERC-1155](./eip-1155.md) standards in order to acheive ease of adoption across wallet providers as most wallet providers are able to support and display ER-C20, ERC-1155 and ERC-721 standards with ease. An implementation which doesn't extends these standards will require the wallet provider to build a custom user interface and interfacing logic which will impede the go to market process.
+This standard sticks to the push transaction model where the transfer of PBM is initiated on the senders side. Modern wallets can support the required PBM logic by embedding the unwrapping logic within the [ERC-1155](./eip-1155.md) `safeTransfer` function.
 
-This standard sticks to the push transaction model where the transfer of PBM is initiated on the senders side. By embedding the unwrapping logic within the [ERC-1155](./eip-1155.md) `safeTransfer` function, modern wallets are able to support the required PBM logic immediately. 
+### Customisability
 
-
-### Customisabiltiy 
 Each ERC-1155 PBM Token would map to an underlying `PBMToken` data structure that implementors are free to customize in accordance to the business logic.
 
 By mapping the underlying ERC-1155 token model with an additional data structure, it allows for the flexibility in the management of multiple token types within the same smart contract with multiple conditional unwrapping logic attached to each token type which reduces the gas costs as there is no need to deploy multiple smart contracts for each token types.
 
-This EIP makes no assumption on access control and under what conditions can a function be executed. It is the responsibility of the PBM creator to determine what a user is able to do and the conditions by which it is useable. 
+1. This EIP makes no assumption on access control and under what conditions can a function be executed. It is the responsibility of the PBM creator to determine what a user is able to do and the conditions by which it is useable.
 
 2. The event notifies subscribers whoever are interested to learn an asset is being consumed.
 
@@ -225,7 +244,7 @@ This EIP makes no assumption on access control and under what conditions can a f
 
 4. Metadata associated to the consumables is not included the standard. If necessary, related metadata can be created with a separate metadata extension interface like `ERC721Metadata` from [EIP-721](./eip-721.md)
 
-or refer to opensea 
+or refer to opensea
 
 5. MAYBE We choose to include an `address consumer` for `consume` function and `isConsumableBy` so that an NFT MAY be consumed for someone other than the transaction initiator.
 
@@ -236,11 +255,12 @@ adding crypto endorsements.
 while we design this EIP with EIP-721 and EIP-1155 in mind mostly, we don't want to rule out
 the potential future case someone use a different token standard or use it in different use cases.
 
-
 ## Backwards Compatibility
-This interface is designed to be compatible with [ERC-1155](./eip-1155.md). 
+
+This interface is designed to be compatible with [ERC-1155](./eip-1155.md).
 
 ## Reference Implementation
+
 Reference implementations can be found in [`README.md`](../assets/eip-pbmrc1/README.md).
 
 ## Security Considerations
@@ -248,7 +268,7 @@ Reference implementations can be found in [`README.md`](../assets/eip-pbmrc1/REA
 
 Malicious users are able to clone existing PBM in tricking users, or creating a PBM with no underlying token of value, or falsifying the face value of each PBM token.
 
-Compliant contracts should pay attention to the balance change for each user when a token is being consumed or minted. 
+Compliant contracts should pay attention to the balance change for each user when a token is being consumed or minted.
 
 When the contract is being paused, or the user is being restricted from transferring a token, the unwrap function should be consistent with the transfer restriction
 
@@ -261,7 +281,6 @@ This EIP depends on the security soundness of the underlying book keeping behavi
 - The mapping of each PBM tokens to the amount of underlying spot token held by the smart contract should be carefully accounted for and audited.
 
 It is recommended to adopt a token standard that is compaitible with ERC-20. Examples of such tokens will be ERC-777, ERC-1363. ERC-20 however remains the most used as a result of the high degree of confidence in its security and simplicity.
-
 
 ## Copyright
 
