@@ -266,7 +266,7 @@ Reference implementations can be found in [`README.md`](../assets/eip-pbmrc1/REA
 
 - Compliant contracts should pay attention to the balance change for each user when a token is being consumed or minted.
 
-- If PBM Tokens are sent to a contract that is not compatible with PBM Wrapper the transaction **MUST** fail and PBM Tokens should remain in the sender's PBM Wallet. [ERC-223](./eip-223.md)
+- If PBM Tokens are sent to a recipient wallet that is not compatible with PBM Wrapper the transaction **MUST** fail and PBM Tokens should remain in the sender's PBM Wallet.
 
 - To ensure consistency, when the contract is being suspended, or a user is being restricted from transferring a token, due to suspected fraud, erroneous transfers etc, similar restrictions **MUST** be applied to the user's requests to unwrap the PBM Token.
 
