@@ -75,7 +75,7 @@ A PBM Wrapper **SHOULD** be able to wrap multiple types of compatible Spot Token
 In order to allow the implementors of this PBM standard to have maximum flexibility in the way they structure the PBM business logic, a PBM can implement this interface in two ways:
 
 - directly by declaring that (`contract ContractName is InterfaceName`); or
-- indirectly by adding all functions from this interface into the contract. The indirect method allows the contract to implement one or more interfaces.
+- indirectly by adding all functions from this interface into the contract. The indirect method allows the contract to implement additional interfaces.
 
 ### PBM token details
 
@@ -236,15 +236,15 @@ By mapping the underlying ERC-1155 token model with an additional data structure
 
 1. This EIP makes no assumption on access control and under what conditions can a function be executed. It is the responsibility of the PBM Creator to determine what a user is able to do and the conditions by which a asset is consumed.
 
-2. The event notifies subscribers who are interested to learn whenever an asset is being used.
+2. The event notifies subscribers who are interested to learn whenever an PBM Token is being consumed.
 
 3. To keep it simple, this standard *intentionally* omits functions or events related to the creation of a consumable asset. because of XYZ
 
 4. Metadata associated to the consumables is not included the standard. If necessary, related metadata can be created with a separate metadata extension interface, e.g. `ERC721Metadata` from [EIP-721](./eip-721.md). Refer to [Opensea](https://docs.opensea.io/docs/metadata-standards) for an implementation example.
 
-5. MAYBE We choose to include an `address consumer` for `consume` function and `isConsumableBy` so that an NFT MAY be consumed for someone other than the transaction initiator.
+5. It is **OPTIONAL** to include an parameter `address consumer` for `consume` and `isConsumableBy` functions so that an NFT **MAY** be consumed for someone other than the transaction initiator.
 
-6. We choose to include an extra `_data` field for future extension, such as
+6. It is **OPTIONAL** to include an extra `_data` field to cater for future extension(s), such as
 adding crypto endorsements.
 
 ## Backwards Compatibility
@@ -258,21 +258,27 @@ Reference implementations can be found in [`README.md`](../assets/eip-pbmrc1/REA
 ## Security Considerations
 <!-- TBD Improvement: Think of other security considerations + Read up other security considerations in various EIPS and add on to this.  Improve grammer, sentence structure -->
 
-Malicious users are able to clone existing PBM in tricking users, or creating a PBM with no underlying token of value, or falsifying the face value of each PBM token.
+- Malicious users may attempt to:
 
-Compliant contracts should pay attention to the balance change for each user when a token is being consumed or minted.
+  - clone existing PBM Tokens to perform double-spending;
+  - create invalid PBM Token with no underlying Spot Token; or
+  - falsifying the face value of PBM token through wrapping of fraudulent/invalid/worthless Spot Tokens.
 
-To ensure consistency, when the contract is being suspended, or a user is being restricted from transferring a token, due to suspected fraud, erroneous transfers etc, similar restrictions **MUST** be applied to the user's requests to unwrap the PBM Token.
+- Compliant contracts should pay attention to the balance change for each user when a token is being consumed or minted.
 
-Security audits and tests should be used to verify that unwrap logic behaves as expected or if any complex business logic is being implemented that involves calling an external smart contract to prevent re-entrancy attacks and other forms of call chain attacks.
+- If PBM Tokens are sent to a contract that is not compatible with PBM Wrapper the transaction **MUST** fail and PBM Tokens should remain in the sender's PBM Wallet. [ERC-223](./eip-223.md)
 
-This EIP depends on the security soundness of the underlying book keeping behavior of the token implementation.
+- To ensure consistency, when the contract is being suspended, or a user is being restricted from transferring a token, due to suspected fraud, erroneous transfers etc, similar restrictions **MUST** be applied to the user's requests to unwrap the PBM Token.
 
-- The PBM Wrapper should be carefully designed to ensure effective control over permission to mint a new token. Failing to safeguard permission to mint a new PBM Token can cause fraudulent issuance and and unauthorised inflation of total token supply.
+- Security audits and tests should be performed to verify that unwrap logic behaves as expected or if any complex business logic is being implemented that involves calling an external smart contract to prevent re-entrancy attacks and other forms of call chain attacks.
 
-- The mapping of each PBM Tokens to the amount of underlying spot token held by the smart contract should be carefully accounted for and audited.
+- This EIP depends on the security soundness of the underlying book keeping behavior of the token implementation.
 
-It is recommended to adopt a token standard that is compatible with ERC-20. Examples of such compatible tokens includes tokens implementing ERC-777 or ERC-1363. However, ERC-20 remains the most widely accepted because of its simplicity and there is a high degree of confidence in its security.
+  - The PBM Wrapper should be carefully designed to ensure effective control over permission to mint a new token. Failing to safeguard permission to mint a new PBM Token can cause fraudulent issuance and and unauthorised inflation of total token supply.
+
+  - The mapping of each PBM Tokens to the amount of underlying spot token held by the smart contract should be carefully accounted for and audited.
+
+- It is recommended to adopt a token standard that is compatible with ERC-20. Examples of such compatible tokens includes tokens implementing ERC-777 or ERC-1363. However, ERC-20 remains the most widely accepted because of its simplicity and there is a high degree of confidence in its security.
 
 ## Copyright
 
