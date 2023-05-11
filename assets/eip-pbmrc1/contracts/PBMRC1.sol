@@ -6,9 +6,9 @@ pragma solidity ^0.8.0;
 */
 interface ERC1155Metadata_URI {
     /**
-        @notice A distinct Uniform Resource Identifier (URI) for a given token.
-        @dev URIs are defined in RFC 3986.
-        The URI MUST point to a JSON file that conforms to the "ERC-1155 Metadata URI JSON Schema".    
+        @notice             A distinct Uniform Resource Identifier (URI) for a given token.
+        @dev                URIs are defined in RFC 3986. The URI MUST point to a JSON file
+                            that conforms to the "ERC-1155 Metadata URI JSON Schema".    
         @param _id          The tokenId    
         @return _uriString  URI string
     */
@@ -21,12 +21,12 @@ interface IERC173 {
     /// @dev This emits when ownership of a contract changes.
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
-    /// @notice Get the address of the owner
+    /// @notice             Get the address of the owner
     /// @return _owner      The address of the owner.
     function owner() external view returns (address);
 
-    /// @notice Set the address of the new owner of the contract
-    /// @dev Set _newOwner to address(0) to renounce any ownership.
+    /// @notice             Set the address of the new owner of the contract
+    /// @dev                Set _newOwner to address(0) to renounce any ownership.
     /// @param _newOwner    The address of the new owner of the contract
     function transferOwnership(address _newOwner) external;
 }
