@@ -29,6 +29,7 @@ A PBM based architecture has several distinct components:
 
 - **sovToken** - a ERC-20 or ERC-20 compatible digital currency (e.g. ERC-777, ERC-1363) serving as the store of value token (i.e. collateral backing the PBM Token).
 
+
   - Digital currency referred to in this PBMRC paper **SHOULD** possess the following properties:
     - a good store of value;
     - a suitable unit of account; and
