@@ -229,15 +229,8 @@ This interface contains the essential functions required to implement a pre-load
 ```solidity
 pragma solidity ^0.8.0;
 
-// TBD: go through each function params and adopt _param name standard?
-// TBD: check the parameters of each functions. are they necessary? does it need to be an array?
 /// LIST OF EVENTS TO BE EMITTED
-// TBD: check the parameters of the events
-// TBD: consider these events to be added into safeMint functions if they are going to wrap an underlying eRC20tokens
-// TBD: consider other events to be EMITTED
-// TBD: event logs emitted by the smart contract will provide enough data to create an accurate record of all current token balances.
-// A database or explorer may listen to events and be able to provide indexed and categorized searches
-
+/// A database or explorer may listen to events and be able to provide indexed and categorized searches
 /// @title PBM Specification interface
 /// @notice The PBM (purpose bound money) allows us to add logical requirements on the use of sovTokens.
 /// The PBM acts as wrapper around the sovTokens and implements the necessary business logic.
@@ -506,8 +499,6 @@ Compliant contract **MUST** implement the following interface:
 
 ```solidity
 pragma solidity ^0.8.0;
-
-// TBD: add param docs for load, loadto. Check all params documented.
 
 /**
  *  @dev This interface extends IPBMRC1, adding functions for working with non-preloaded PBMs.
